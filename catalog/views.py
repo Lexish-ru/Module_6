@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from .models import Message
+
 
 def home(request):
     return render(request, 'catalog/index.html')
@@ -26,3 +28,4 @@ def contacts_view(request):
         })
 
     return render(request, 'catalog/contacts.html')
+

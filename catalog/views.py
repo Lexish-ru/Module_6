@@ -26,3 +26,7 @@ def contacts_view(request):
     return render(request, 'catalog/contacts.html', {
         "form": form
     })
+
+def messages_view(request):
+    messages = Message.objects.order_by('-created_at')
+    return render(request, 'catalog/messages.html', {'messages': messages})

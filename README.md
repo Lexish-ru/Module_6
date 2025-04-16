@@ -37,25 +37,6 @@ poetry run python manage.py runserver
 - `/category/` — ретро-смартфоны
 - `/contacts/` — форма обратной связи
 
-## 📁 Структура
-
-```
-catalog/
-├── views.py
-├── urls.py
-├── templates/
-│   └── catalog/
-│       ├── index.html
-│       ├── catalog.html
-│       ├── category.html
-│       └── contacts.html
-config/
-├── settings.py
-├── urls.py
-manage.py
-pyproject.toml
-poetry.lock
-```
 
 ## 🧪 Заметки
 

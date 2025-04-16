@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Message
+from .forms import MessageForm
 
 
 def home(request):
@@ -12,20 +13,16 @@ def category_view(request):
     return render(request, 'catalog/category.html')
 
 def contacts_view(request):
-    if request.method == "POST":
-        name = request.POST.get("name", "Без имени")
-        email = request.POST.get("email", "Без почты")
-        message = request.POST.get("message", "Без сообщения")
+    form = MessageForm(request.POST or None)
 
-        print("Новое сообщение:")
-        print(f"Имя: {name}")
-        print(f"Email: {email}")
-        print(f"Сообщение: {message}")
-
+    if request.method == "POST" and form.is_valid():
+        form.save()
         return render(request, 'catalog/contacts.html', {
             "success": True,
-            "name": name
+            "name": form.cleaned_data.get("name"),
+            "form": MessageForm()  # новая пустая форма после отправки
         })
 
-    return render(request, 'catalog/contacts.html')
-
+    return render(request, 'catalog/contacts.html', {
+        "form": form
+    })

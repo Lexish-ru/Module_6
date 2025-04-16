@@ -10,16 +10,16 @@
     <div class="row">
       <nav class="col-md-2 d-none d-md-block bg-dark text-white min-vh-100">
         <ul class="nav flex-column mt-3">
-          <li class="nav-item"><a class="nav-link text-white" href="index.html">Главная</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="catalog.html">Каталог</a></li>
-          <li class="nav-item"><a class="nav-link text-white" href="category.html">Категории</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}">Главная</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="{% url 'catalog' %}">Каталог</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="{% url 'category' %}">Категории</a></li>
           <li class="nav-item"><a class="nav-link active text-white" href="#">Контакты</a></li>
         </ul>
-         <hr>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="#">Профиль</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Выход</a></li>
-          </ul>
+        <hr>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link text-white" href="#">Профиль</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Выход</a></li>
+        </ul>
       </nav>
 
       <main class="col-md-10 ms-sm-auto px-4">
@@ -28,9 +28,16 @@
           <p>Заполните форму, чтобы связаться с нами.</p>
         </div>
 
+        {% if success %}
+          <div class="alert alert-success text-center">
+            Спасибо, {{ name }}! Ваше сообщение отправлено.
+          </div>
+        {% endif %}
+
         <div class="row justify-content-center">
           <div class="col-md-6">
-            <form action="/submit" method="POST">
+            <form method="POST">
+              {% csrf_token %}
               <div class="mb-3">
                 <label for="name" class="form-label">Имя</label>
                 <input type="text" class="form-control" id="name" name="name" required>

@@ -5,9 +5,13 @@ app = Flask(__name__)
 pages = {
     "": "index.html",
     "index": "index.html",
+    "index.html": "index.html",
     "catalog": "catalog.html",
+    "catalog.html": "catalog.html",
     "category": "category.html",
-    "contacts": "contacts.html"
+    "category.html": "category.html",
+    "contacts": "contacts.html",
+    "contacts.html": "contacts.html"
 }
 
 @app.route('/', defaults={'path': ''})

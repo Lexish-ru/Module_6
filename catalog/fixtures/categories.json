@@ -1,0 +1,26 @@
+[
+{
+  "model": "catalog.category",
+  "pk": 1,
+  "fields": {
+    "name": "Ретро-смартфоны",
+    "description": "Легенды мобильной связи"
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 2,
+  "fields": {
+    "name": "Ретро-консоли",
+    "description": "Игровые приставки прошлого века"
+  }
+},
+{
+  "model": "catalog.category",
+  "pk": 3,
+  "fields": {
+    "name": "MP3-плееры",
+    "description": "Музыкальные устройства 2000-х"
+  }
+}
+]

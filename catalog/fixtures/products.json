@@ -1,0 +1,28 @@
+[
+{
+  "model": "catalog.product",
+  "pk": 1,
+  "fields": {
+    "name": "Nokia 3310",
+    "description": "Культовый телефон начала 2000-х",
+    "image": "",
+    "category": 1,
+    "price": "2499.00",
+    "created_at": "2025-04-21T13:43:39.199Z",
+    "updated_at": "2025-04-21T13:44:22.640Z"
+  }
+},
+{
+  "model": "catalog.product",
+  "pk": 2,
+  "fields": {
+    "name": "Sony PlayStation 1",
+    "description": "Первая консоль Sony, изменившая индустрию игр",
+    "image": "",
+    "category": 2,
+    "price": "4999.00",
+    "created_at": "2025-04-21T13:43:39.308Z",
+    "updated_at": "2025-04-21T13:43:39.308Z"
+  }
+}
+]

@@ -4,10 +4,12 @@ version = "0.1.0"
 description = ""
 authors = ["Alexey Stolbov <alstoff@live.ru>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
 flask = "^3.1.0"
+django = "^5.2"
 
 
 [build-system]

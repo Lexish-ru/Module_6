@@ -35,4 +35,4 @@ def messages_view(request):
 
 def product_detail(request, pk):
     product = Product.objects.get(pk=pk)
-    return render(request, 'catalog/product_detail.html', {'product': product})
+    return render(request, 'catalog/product.html', {'product': product})

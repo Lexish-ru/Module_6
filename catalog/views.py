@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from .models import Message
+from .models import Message, Product
 from .forms import MessageForm
 
 
 def home(request):
-    return render(request, 'catalog/index.html')
+    products = Product.objects.all()
+    return render(request, 'catalog/index.html', {'products': products})
 
 def catalog_view(request):
     return render(request, 'catalog/catalog.html')

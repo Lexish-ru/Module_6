@@ -31,3 +31,8 @@ def contacts_view(request):
 def messages_view(request):
     messages = Message.objects.order_by('-created_at')
     return render(request, 'catalog/messages.html', {'messages': messages})
+
+
+def product_detail(request, pk):
+    product = Product.objects.get(pk=pk)
+    return render(request, 'catalog/product_detail.html', {'product': product})

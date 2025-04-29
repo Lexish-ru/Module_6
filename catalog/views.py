@@ -23,7 +23,7 @@ def category_view(request, pk):
 
 def category_list(request):
     categories = Category.objects.all()
-    return render(request, "catalog/category_list.html", {"categories": categories})
+    return render(request, "catalog/category.html", {"categories": categories})
 
 
 def product_detail(request, pk):

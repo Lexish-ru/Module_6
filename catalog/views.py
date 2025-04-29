@@ -1,6 +1,7 @@
 # catalog/views.py
 from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
+from .forms import MessageForm
 
 
 def home_view(request):
@@ -32,8 +33,27 @@ def product_detail(request, pk):
 
 
 def contacts_view(request):
-    return render(request, "catalog/contacts.html")
+    form = MessageForm()
+    return render(request, "catalog/contacts.html", {"form": form})
 
+def contacts_view(request):
+    success = False
+    name = ""
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save()
+            success = True
+            name = message.name
+            form = MessageForm()  # сбрасываем форму
+    else:
+        form = MessageForm()
+
+    return render(request, "catalog/contacts.html", {
+        "form": form,
+        "success": success,
+        "name": name
+    })
 
 def messages_view(request):
     return render(request, "catalog/messages.html")

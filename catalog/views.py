@@ -5,7 +5,9 @@ from .forms import MessageForm
 
 
 def home_view(request):
-    return render(request, "catalog/index.html")
+    products = Product.objects.all()
+    return render(request, "catalog/index.html", {"products": products})
+
 
 
 def catalog_view(request):

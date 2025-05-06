@@ -1,49 +1,43 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Post
+from .forms import PostForm
 
-# Create your views here.
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .models import BlogPost
+def post_list(request):
+    posts = Post.objects.all()
+    return render(request, "post_list.html", {"posts": posts})
 
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, "post_detail.html", {"post": post})
 
-class BlogListView(ListView):
-    model = BlogPost
-    template_name = 'blog/blog_list.html'
-    context_object_name = 'posts'
+def post_create(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Пост успешно создан.")
+            return redirect("post_list")
+    else:
+        form = PostForm()
+    return render(request, "post_form.html", {"form": form})
 
-    def get_queryset(self):
-        return BlogPost.objects.filter(is_published=True).order_by('-created_at')
+def post_update(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Пост успешно обновлен.")
+            return redirect("post_detail", pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+    return render(request, "post_form.html", {"form": form})
 
-
-class BlogDetailView(DetailView):
-    model = BlogPost
-    template_name = 'blog/blog_detail.html'
-    context_object_name = 'post'
-
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        obj.views += 1
-        obj.save()
-        return obj
-
-
-class BlogCreateView(CreateView):
-    model = BlogPost
-    fields = ['title', 'content', 'image', 'is_published']
-    template_name = 'blog/blog_form.html'
-    success_url = reverse_lazy('blog_list')
-
-
-class BlogUpdateView(UpdateView):
-    model = BlogPost
-    fields = ['title', 'content', 'image', 'is_published']
-    template_name = 'blog/blog_form.html'
-
-    def get_success_url(self):
-        return self.object.get_absolute_url()
-
-
-class BlogDeleteView(DeleteView):
-    model = BlogPost
-    template_name = 'blog/blog_confirm_delete.html'
-    success_url = reverse_lazy('blog_list')
+def post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        post.delete()
+        messages.success(request, "Пост удален.")
+        return redirect("post_list")
+    return render(request, "post_confirm_delete.html", {"post": post})

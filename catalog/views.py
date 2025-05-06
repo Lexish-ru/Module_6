@@ -1,32 +1,55 @@
-from django.shortcuts import render
-from .models import Message
+from django.shortcuts import render, get_object_or_404
+from .models import Product, Category
 from .forms import MessageForm
 
 
-def home(request):
-    return render(request, 'catalog/index.html')
+def home_view(request):
+    products = Product.objects.all()
+    return render(request, "catalog/index.html", {"products": products})
+
 
 def catalog_view(request):
-    return render(request, 'catalog/catalog.html')
+    products = Product.objects.all()
+    return render(request, "catalog/catalog.html", {"products": products})
 
-def category_view(request):
-    return render(request, 'catalog/category.html')
 
-def contacts_view(request):
-    form = MessageForm(request.POST or None)
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, "catalog/category.html", {"categories": categories})
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        return render(request, 'catalog/contacts.html', {
-            "success": True,
-            "name": form.cleaned_data.get("name"),
-            "form": MessageForm()  # новая пустая форма после отправки
-        })
 
-    return render(request, 'catalog/contacts.html', {
-        "form": form
+def category_view(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    products = Product.objects.filter(category=category)
+    return render(request, "catalog/category.html", {
+        "category": category,
+        "products": products
     })
 
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, "catalog/product.html", {"product": product})
+
+
+def contacts_view(request):
+    success = False
+    name = ""
+    if request.method == "POST":
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save()
+            success = True
+            name = message.name
+            form = MessageForm()
+    else:
+        form = MessageForm()
+    return render(request, "catalog/contacts.html", {
+        "form": form,
+        "success": success,
+        "name": name
+    })
+
+
 def messages_view(request):
-    messages = Message.objects.order_by('-created_at')
-    return render(request, 'catalog/messages.html', {'messages': messages})
+    return render(request, "catalog/messages.html")

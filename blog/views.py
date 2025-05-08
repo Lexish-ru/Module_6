@@ -9,8 +9,8 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    post.views += 1
-    post.save(update_fields=["views"])
+    post.views_count += 1
+    post.save(update_fields=["views_count"])
     return render(request, "blog/post_detail.html", {"post": post})
 
 def post_create(request):

@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Редактировать продукт{% endblock %}
+
+{% block content %}
+  <div class="container py-4">
+    <h2 class="mb-4">Редактировать продукт</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+  </div>
+{% endblock %}

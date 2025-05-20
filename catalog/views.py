@@ -1,7 +1,7 @@
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.views.generic import DetailView, FormView, CreateView, UpdateView, DeleteView, ListView
 from django.shortcuts import get_object_or_404
 from .models import Product, Category
-from .forms import MessageForm
+from .forms import MessageForm, ProductForm
 from django.urls import reverse_lazy
 
 class HomeView(ListView):
@@ -42,3 +42,26 @@ class ContactsView(FormView):
     def form_valid(self, form):
         self.object = form.save()
         return self.render_to_response(self.get_context_data(success=True, name=self.object.name, form=self.form_class()))
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/catalog.html'
+    context_object_name = 'products'
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog')
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog')
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'catalog/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog')

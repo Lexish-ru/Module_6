@@ -1,8 +1,6 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from django.urls import path
+from .views import RegisterView
 
-class UserRegisterForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+urlpatterns = [
+    path('register/', RegisterView.as_view(), name='register'),
+]

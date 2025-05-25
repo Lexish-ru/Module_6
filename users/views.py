@@ -1,6 +1,7 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from .forms import UserRegisterForm
 from .models import User
 
@@ -14,4 +15,10 @@ class RegisterView(CreateView):
         response = super().form_valid(form)
         login(self.request, self.object)  # Автоматический вход
         return response
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
 

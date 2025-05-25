@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+  <div class="container py-4">
+    <h2>Профиль</h2>
+    <p><strong>Логин:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Страна:</strong> {{ user.country }}</p>
+    <p><strong>Телефон:</strong> {{ user.phone }}</p>
+    {% if user.avatar %}
+      <img src="{{ user.avatar.url }}" alt="Аватар" width="150" height="150" style="object-fit: cover;">
+    {% else %}
+      <p>Аватар не загружен.</p>
+    {% endif %}
+
+    <a href="{% url 'profile_edit' %}" class="btn btn-secondary mt-3">Редактировать профиль</a>
+  </div>
+{% endblock %}

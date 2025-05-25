@@ -1,5 +1,9 @@
 from django import forms
-from .models import Message
+from .models import Message, Product
+from django.core.exceptions import ValidationError
+
+BANNED_WORDS = ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']
+
 
 class MessageForm(forms.ModelForm):
     class Meta:
@@ -15,3 +19,34 @@ class MessageForm(forms.ModelForm):
             'email': 'Электронная почта',
             'message': 'Сообщение'
         }
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if isinstance(field.widget, forms.widgets.Select):
+                field.widget.attrs['class'] = 'form-select'
+            else:
+                field.widget.attrs['class'] = 'form-control'
+
+    def clean_name(self):
+        name = self.cleaned_data['name'].lower()
+        if any(word in name for word in BANNED_WORDS):
+            raise ValidationError("Название содержит запрещённые слова.")
+        return self.cleaned_data['name']
+
+    def clean_description(self):
+        description = self.cleaned_data['description'].lower()
+        if any(word in description for word in BANNED_WORDS):
+            raise ValidationError("Описание содержит запрещённые слова.")
+        return self.cleaned_data['description']
+
+    def clean_price(self):
+        price = self.cleaned_data['price']
+        if price < 0:
+            raise ValidationError("Цена не может быть отрицательной.")
+        return price

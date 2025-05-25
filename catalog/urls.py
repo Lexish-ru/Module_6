@@ -4,15 +4,22 @@ from .views import (
     CatalogView,
     CategoryDetailView,
     CategoryListView,
+    ProductListView,
     ProductDetailView,
     ContactsView,
+    ProductCreateView,
+    ProductUpdateView,
+    ProductDeleteView,
 )
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
-    path("catalog/", CatalogView.as_view(), name="catalog"),
+    path("catalog/", ProductListView.as_view(), name="catalog"),
     path("category/", CategoryListView.as_view(), name="category_list"),
     path("category/<int:pk>/", CategoryDetailView.as_view(), name="category"),
     path("product/<int:pk>/", ProductDetailView.as_view(), name="product"),
     path("contacts/", ContactsView.as_view(), name="contacts"),
+    path("add/", ProductCreateView.as_view(), name="product_add"),
+    path("<int:pk>/edit/", ProductUpdateView.as_view(), name="product_edit"),
+    path("<int:pk>/delete/", ProductDeleteView.as_view(), name="product_delete"),
 ]

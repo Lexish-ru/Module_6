@@ -3,18 +3,23 @@
 {% block content %}
 <div class="py-4 text-center">
   <h2>Каталог товаров</h2>
+  <a href="{% url 'product_add' %}" class="btn btn-success mt-2">Добавить продукт</a>
 </div>
 <div class="row justify-content-center">
   {% for product in products %}
   <div class="col-md-3 m-3">
     <div class="card text-center h-100">
       {% if product.image %}
-      <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+      <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+     style="aspect-ratio: 1/1; object-fit: contain; width: 100%;">
       {% endif %}
       <div class="card-body">
         <h5 class="card-title">{{ product.name }}</h5>
         <p class="card-text">{{ product.description|truncatechars:100 }}</p>
-        <a href="{% url 'product' product.pk %}" class="btn btn-outline-primary">Подробнее</a>
+        <p><strong>{{ product.price }} руб.</strong></p>
+        <a href="{% url 'product' product.pk %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
+        <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning btn-sm mt-1">Редактировать</a>
+        <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm mt-1">Удалить</a>
       </div>
     </div>
   </div>

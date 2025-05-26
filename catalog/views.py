@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404
 from .models import Product, Category
 from .forms import MessageForm, ProductForm
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 class HomeView(ListView):
     model = Product
@@ -71,15 +72,32 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     login_url = 'login'
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog')
+    permission_required = 'catalog.change_product'
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    def has_permission(self):
+        obj = self.get_object()
+        return (
+            self.request.user == obj.owner or
+            self.request.user.has_perm(self.permission_required)
+        )
+
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     login_url = 'login'
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog')
+    permission_required = 'catalog.delete_product'
+
+    def has_permission(self):
+        obj = self.get_object()
+        return (
+            self.request.user == obj.owner or
+            self.request.user.has_perm(self.permission_required)
+        )
+

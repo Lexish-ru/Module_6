@@ -35,6 +35,15 @@ class ProductDetailView(DetailView):
     template_name = "catalog/product.html"
     context_object_name = "product"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["can_edit"] = (
+                user.is_authenticated and (user == self.object.owner or user.has_perm("catalog.can_unpublish_product"))
+        )
+        return context
+
+
 class ContactsView(FormView):
     template_name = "catalog/contacts.html"
     form_class = MessageForm

@@ -1,4 +1,13 @@
 from django.db import models
+from django.conf import settings
+
+
+owner = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.CASCADE,
+    verbose_name='Владелец',
+    related_name='products'
+)
 
 class Message(models.Model):
     name = models.CharField(max_length=100)

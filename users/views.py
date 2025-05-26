@@ -5,6 +5,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
+from django.core.mail import send_mail
+from django.conf import settings
 from .forms import UserRegisterForm, UserUpdateForm
 from .models import User
 
@@ -17,7 +19,17 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)  # Автоматический вход
+
+        send_mail(
+            subject='Добро пожаловать на Retrocat!',
+            message=f'Привет, {self.object.username}! Спасибо за регистрацию.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.object.email],
+            fail_silently=False,
+        )
+
         return response
+
 
 
 def logout_view(request):

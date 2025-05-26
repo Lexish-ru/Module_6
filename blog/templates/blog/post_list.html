@@ -9,5 +9,8 @@
       <li>Нет постов.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'post_create' %}" class="btn btn-primary">Добавить пост</a>
+
+  {% if user.is_authenticated and user.groups.all|length > 0 and user.groups.first.name == 'authors' %}
+    <a href="{% url 'post_create' %}" class="btn btn-primary">Добавить пост</a>
+  {% endif %}
 {% endblock %}

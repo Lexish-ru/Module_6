@@ -11,7 +11,11 @@
     {% endif %}
     <p><strong>Описание:</strong> {{ product.description }}</p>
     <p><strong>Цена:</strong> {{ product.price }} руб.</p>
-    <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning">Редактировать</a>
+    {% if can_edit %}
+      <a href="{% url 'product_edit' product.pk %}" class="btn btn-warning">Редактировать</a>
+      <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}

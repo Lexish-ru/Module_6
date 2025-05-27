@@ -1,13 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Блог{% endblock %}
 {% block content %}
-  <h2>Список постов</h2>
-  <ul>
+  <h2>Посты</h2>
+  <ul class="list-group">
     {% for post in posts %}
-      <li><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></li>
+      <li class="list-group-item">
+        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+        <span class="text-muted"> ({{ post.created_at|date:"d.m.Y" }})</span>
+      </li>
     {% empty %}
-      <li>Нет постов.</li>
+      <li class="list-group-item">Нет постов.</li>
     {% endfor %}
   </ul>
-  <a href="{% url 'post_create' %}" class="btn btn-primary">Добавить пост</a>
+  {% if user.is_authenticated and perms.blog.add_post %}
+    <a href="{% url 'post_create' %}" class="btn btn-success mt-3">Создать пост</a>
+  {% endif %}
 {% endblock %}

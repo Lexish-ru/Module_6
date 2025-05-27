@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404
 from .models import Product, Category
 from .forms import MessageForm, ProductForm
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
 
 class HomeView(ListView):
     model = Product
@@ -35,6 +36,15 @@ class ProductDetailView(DetailView):
     template_name = "catalog/product.html"
     context_object_name = "product"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["can_edit"] = (
+                user.is_authenticated and (user == self.object.owner or user.has_perm("catalog.can_unpublish_product"))
+        )
+        return context
+
+
 class ContactsView(FormView):
     template_name = "catalog/contacts.html"
     form_class = MessageForm
@@ -57,15 +67,37 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog')
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     login_url = 'login'
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog')
+    permission_required = 'catalog.change_product'
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    def has_permission(self):
+        obj = self.get_object()
+        return (
+            self.request.user == obj.owner or
+            self.request.user.has_perm(self.permission_required)
+        )
+
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     login_url = 'login'
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog')
+    permission_required = 'catalog.delete_product'
+
+    def has_permission(self):
+        obj = self.get_object()
+        return (
+            self.request.user == obj.owner or
+            self.request.user.has_perm(self.permission_required)
+        )
+

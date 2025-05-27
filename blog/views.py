@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Post
 from .forms import PostForm
+from django.contrib.auth.decorators import login_required
+
+
 
 def post_list(request):
     posts = Post.objects.order_by('-created_at')
@@ -13,7 +16,10 @@ def post_detail(request, pk):
     post.save(update_fields=["views_count"])
     return render(request, "blog/post_detail.html", {"post": post})
 
+
+@login_required(login_url='login')
 def post_create(request):
+    login_url = 'login'
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -24,7 +30,10 @@ def post_create(request):
         form = PostForm()
     return render(request, "blog/post_form.html", {"form": form})
 
+
+@login_required(login_url='login')
 def post_update(request, pk):
+    login_url = 'login'
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES, instance=post)
@@ -36,7 +45,10 @@ def post_update(request, pk):
         form = PostForm(instance=post)
     return render(request, "blog/post_form.html", {"form": form})
 
+
+@login_required(login_url='login')
 def post_delete(request, pk):
+    login_url = 'login'
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         post.delete()

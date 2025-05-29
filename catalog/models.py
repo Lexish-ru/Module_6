@@ -2,13 +2,6 @@ from django.db import models
 from django.conf import settings
 
 
-owner = models.ForeignKey(
-    settings.AUTH_USER_MODEL,
-    on_delete=models.CASCADE,
-    verbose_name='Владелец',
-    related_name='products'
-)
-
 class Message(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -39,6 +32,12 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата последнего обновления")
     is_published = models.BooleanField(default=False, verbose_name='Опубликован')
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='Владелец',
+        related_name='products'
+    )
 
     class Meta:
         verbose_name = "Товар"

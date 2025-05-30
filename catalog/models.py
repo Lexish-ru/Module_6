@@ -1,3 +1,6 @@
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.core.cache import cache
 from django.db import models
 from django.conf import settings
 
@@ -46,3 +49,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver([post_save, post_delete], sender=Product)
+def clear_category_cache(sender, instance, **kwargs):
+    cache_key = f"products_category_{instance.category_id}"
+    cache.delete(cache_key)

@@ -1,5 +1,5 @@
 from django.views.generic import DetailView, FormView, CreateView, UpdateView, DeleteView, ListView
-from django.shortcuts import get_object_or_404
+from .services import get_products_by_category
 from .models import Product, Category
 from .forms import MessageForm, ProductForm
 from django.urls import reverse_lazy
@@ -106,3 +106,14 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
             self.request.user == obj.owner or
             self.request.user.has_perm(self.permission_required)
         )
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = "catalog/category.html"
+    context_object_name = "category"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["products"] = get_products_by_category(self.object.id)
+        return context

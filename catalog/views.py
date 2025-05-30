@@ -4,6 +4,8 @@ from .models import Product, Category
 from .forms import MessageForm, ProductForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class HomeView(ListView):
@@ -43,6 +45,10 @@ class ProductDetailView(DetailView):
                 user.is_authenticated and (user == self.object.owner or user.has_perm("catalog.can_unpublish_product"))
         )
         return context
+
+    @method_decorator(cache_page(60 * 15))  # Кеш на 15 минут
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
 
 class ContactsView(FormView):

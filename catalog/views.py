@@ -25,7 +25,7 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["products"] = Product.objects.filter(category=self.object)
+        context["products"] = get_products_by_category(self.object.id)
         return context
 
 class CategoryListView(ListView):
@@ -108,12 +108,3 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         )
 
 
-class CategoryDetailView(DetailView):
-    model = Category
-    template_name = "catalog/category.html"
-    context_object_name = "category"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["products"] = get_products_by_category(self.object.id)
-        return context

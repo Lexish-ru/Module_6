@@ -2,6 +2,7 @@ from django.views.generic import DetailView, FormView, CreateView, UpdateView, D
 from .services import get_products_by_category
 from .models import Product, Category
 from .forms import MessageForm, ProductForm
+from django.core.cache import cache
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils.decorators import method_decorator
@@ -65,6 +66,13 @@ class ProductListView(ListView):
     model = Product
     template_name = 'catalog/catalog.html'
     context_object_name = 'products'
+
+    def get_queryset(self):
+        products = cache.get('all_products')
+        if products is None:
+            products = Product.objects.filter(is_published=True)
+            cache.set('all_products', products, 60 * 5)
+        return products
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     login_url = 'login'

@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.db import models
 
 
@@ -17,4 +19,19 @@ class Message(models.Model):
     def __str__(self):
         return self.subject
 
+
+class Mailing(models.Model):
+    STATUS_COICES = [
+        ('created', 'Создана'),
+        ('started', 'Запущена'),
+        ('finished', 'Завершена'),
+    ]
+    start_at = models.DateTimeField(verbose_name="Дата и время начала")
+    end_at = models.DateTimeField(verbose_name="Дата и время окончания")
+    status = models.CharField(max_lenght=10, choices=STATUS_COICES, default='created', verbose_name="Статус")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение")
+    clients = models.ManyToManyField(Client, related_name="mailings", verbose_name="Получатели")
+
+    def __str__(self):
+        return f"Рассылка {self.id} ({self.get_status_display()})"
 

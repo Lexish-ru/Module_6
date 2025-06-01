@@ -1,4 +1,5 @@
 from email.policy import default
+from pyclbr import Class
 
 from django.db import models
 
@@ -35,3 +36,13 @@ class Mailing(models.Model):
     def __str__(self):
         return f"Рассылка {self.id} ({self.get_status_display()})"
 
+
+class MailingAttempt(models.Model):
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name="attempts", verbose_name="")
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="")
+    attempted_at = models.DateTimeField(auto_now_add=True, verbose_name="")
+    status = models.CharField (max_leght=20, verbose_name="")
+    server_response = models.TextField(verbose_name="", blank=True)
+
+    def __str__(self):
+        return f"{self.mailing} -> {self.client} [{self.status}]"

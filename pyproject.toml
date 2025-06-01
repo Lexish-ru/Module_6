@@ -1,0 +1,21 @@
+[project]
+name = "cp-5"
+version = "0.1.0"
+description = "Course project for module 6, Skypro"
+authors = [
+    {name = "Alexey Stolbov",email = "alstoff@live.ru"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django (>=5.2.1,<6.0.0)",
+    "flask (>=3.1.1,<4.0.0)",
+    "isort (>=6.0.1,<7.0.0)",
+    "flake8 (>=7.2.0,<8.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

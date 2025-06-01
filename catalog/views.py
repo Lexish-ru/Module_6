@@ -1,9 +1,12 @@
 from django.views.generic import DetailView, FormView, CreateView, UpdateView, DeleteView, ListView
-from django.shortcuts import get_object_or_404
+from .services import get_products_by_category
 from .models import Product, Category
 from .forms import MessageForm, ProductForm
+from django.core.cache import cache
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class HomeView(ListView):
@@ -23,7 +26,7 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["products"] = Product.objects.filter(category=self.object)
+        context["products"] = get_products_by_category(self.object.id)
         return context
 
 class CategoryListView(ListView):
@@ -44,6 +47,10 @@ class ProductDetailView(DetailView):
         )
         return context
 
+    @method_decorator(cache_page(60 * 15))  # Кеш на 15 минут
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
 
 class ContactsView(FormView):
     template_name = "catalog/contacts.html"
@@ -59,6 +66,13 @@ class ProductListView(ListView):
     model = Product
     template_name = 'catalog/catalog.html'
     context_object_name = 'products'
+
+    def get_queryset(self):
+        products = cache.get('all_products')
+        if products is None:
+            products = Product.objects.filter(is_published=True)
+            cache.set('all_products', products, 60 * 5)
+        return products
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     login_url = 'login'
@@ -100,3 +114,5 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
             self.request.user == obj.owner or
             self.request.user.has_perm(self.permission_required)
         )
+
+

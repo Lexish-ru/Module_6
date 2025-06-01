@@ -8,3 +8,13 @@ class Client(models.Model):
 
     def __str__(self):
         return f"{self.full_name} <{self.email}>"
+
+
+class Message(models.Model):
+    subject = models.CharField(max_leghth=200, verbose_name="Тeма")
+    body = models.TextField(verbose_name="Текст сообщения")
+
+    def __str__(self):
+        return self.subject
+
+

@@ -1,0 +1,16 @@
+{% extends "mailings/base.html" %}
+{% block title %}Сообщение{% endblock %}
+{% block content %}
+<h2>{% if object %}Изменить{% else %}Добавить{% endif %} сообщение</h2>
+<form method="post">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="mb-3">
+      <label class="form-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+      {{ field }}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-success">Сохранить</button>
+  <a href="{% url 'message-list' %}" class="btn btn-secondary">Назад</a>
+</form>
+{% endblock %}

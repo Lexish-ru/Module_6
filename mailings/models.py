@@ -14,7 +14,7 @@ class Client(models.Model):
 
 
 class Message(models.Model):
-    subject = models.CharField(max_leghth=200, verbose_name="Тeма")
+    subject = models.CharField(max_length=200, verbose_name="Тeма")
     body = models.TextField(verbose_name="Текст сообщения")
 
     def __str__(self):
@@ -29,7 +29,7 @@ class Mailing(models.Model):
     ]
     start_at = models.DateTimeField(verbose_name="Дата и время начала")
     end_at = models.DateTimeField(verbose_name="Дата и время окончания")
-    status = models.CharField(max_lenght=10, choices=STATUS_COICES, default='created', verbose_name="Статус")
+    status = models.CharField(max_length=10, choices=STATUS_COICES, default='created', verbose_name="Статус")
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name="Сообщение")
     clients = models.ManyToManyField(Client, related_name="mailings", verbose_name="Получатели")
 
@@ -38,11 +38,11 @@ class Mailing(models.Model):
 
 
 class MailingAttempt(models.Model):
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name="attempts", verbose_name="")
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="")
-    attempted_at = models.DateTimeField(auto_now_add=True, verbose_name="")
-    status = models.CharField (max_leght=20, verbose_name="")
-    server_response = models.TextField(verbose_name="", blank=True)
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name="attempts", verbose_name="Рассылка")
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Получатель")
+    attempted_at = models.DateTimeField(auto_now_add=True, verbose_name="Время попытки")
+    status = models.CharField (max_length=20, verbose_name="Статус попытки")
+    server_response = models.TextField(verbose_name="Ответ сервера", blank=True)
 
     def __str__(self):
         return f"{self.mailing} -> {self.client} [{self.status}]"

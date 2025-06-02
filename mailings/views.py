@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Client
+from .forms import ClientForm
 
 # Create your views here.
 
@@ -14,13 +15,13 @@ class ClientListView(ListView):
 
 class ClientCreateView(CreateView):
     model = Client
-    fields = ['email', 'full_name', 'comment']
+    form_class = ClientForm
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
 
 class ClientUpdateView(UpdateView):
     model = Client
-    fields = ['email', 'full_name', 'comment']
+    form_class = ClientForm
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
 

@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Client, Message
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
 from .forms import ClientForm, MessageForm
+from .models import Client, Message
 
 # Create your views here.
 

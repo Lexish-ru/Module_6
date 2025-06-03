@@ -1,9 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
 
 from .forms import ClientForm, MailingForm, MessageForm
-from .models import Client, Mailing, Message
+from .models import Client, Mailing, Message, MailingAttempt
 
 # Create your views here.
 
@@ -73,3 +78,40 @@ class MailingDeleteView(DeleteView):
     template_name = 'mailings/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing-list')
 
+class MailingStartView(View):
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        if mailing.status != "created":
+            messages.error(request, "Рассылка уже запущена или завершена.")
+            return redirect('mailing-list')
+
+        clients = mailing.clients.all()
+        results = []
+        for client in clients:
+            try:
+                send_mail(
+                    subject=mailing.message.subject,
+                    message=mailing.message.body,
+                    from_email='EMAIL_HOST_USER',
+                    recipient_list=[client.email],
+                    fail_silently=False
+                )
+                status = 'Успешно'
+                server_response = 'ok'
+            except Exception as e:
+                status = "Неудача"
+                server_response = str(e)
+
+            MailingAttempt.objects.create(
+                mailing=mailing,
+                client=client,
+                attempted_at=timezone.now(),
+                status=status,
+                server_response=server_response,
+            )
+            results.append((client.email, status))
+
+        mailing.status = 'started'
+        mailing.save()
+        messages.success(request, "Рассылка запущена. Отправлено {} писем.".format(len(results)))
+        return redirect('mailing-list')

@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "mailings/base.html" %}
+{% block title %}Рассылка{% endblock %}
+{% block content %}
+<h2>{% if object %}Изменить{% else %}Добавить{% endif %} рассылку</h2>
+<form method="post">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="mb-3">
+      <label class="form-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+      {{ field }}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-success">Сохранить</button>
+  <a href="{% url 'mailing-list' %}" class="btn btn-secondary">Назад</a>
+</form>
+{% endblock %}

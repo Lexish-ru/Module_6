@@ -115,3 +115,9 @@ class MailingStartView(View):
         mailing.save()
         messages.success(request, "Рассылка запущена. Отправлено {} писем.".format(len(results)))
         return redirect('mailing-list')
+
+class MailingAttemptListView(ListView):
+    model = MailingAttempt
+    template_name = 'mailings/attempt_list.html'
+    context_object_name = 'attempts'
+    ordering = ['-attempted_at']

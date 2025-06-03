@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from .forms import ClientForm, MessageForm, MailingForm
-from .models import Client, Message, Mailing
+from .forms import ClientForm, MailingForm, MessageForm
+from .models import Client, Mailing, Message
 
 # Create your views here.
 

@@ -29,6 +29,12 @@
       <td>
         <a href="{% url 'mailing-edit' mailing.pk %}" class="btn btn-primary btn-sm">Изменить</a>
         <a href="{% url 'mailing-delete' mailing.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+          {% if mailing.status == "created" %}
+             <form method="post" action="{% url 'mailing-start' mailing.pk %}" style="display:inline;">
+               {% csrf_token %}
+               <button type="submit" class="btn btn-warning btn-sm">Запустить</button>
+             </form>
+          {% endif %}
       </td>
     </tr>
   {% empty %}

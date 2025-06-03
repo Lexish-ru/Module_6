@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import MailingStartView
+from .views import MailingStartView, RegisterView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('mailings/<int:pk>/delete/', views.MailingDeleteView.as_view(), name='mailing-delete'),
     path('mailings/<int:pk>/start/', MailingStartView.as_view(), name='mailing-start'),
     path('attempts/', views.MailingAttemptListView.as_view(), name='attempt-list'),
+    path('accounts/register/', RegisterView.as_view(), name='register'),
 ]

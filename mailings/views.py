@@ -4,7 +4,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.forms import UserCreationForm
 from django.views import View
 
 from .forms import ClientForm, MailingForm, MessageForm
@@ -129,3 +129,8 @@ class MailingAttemptListView(ListView):
     template_name = 'mailings/attempt_list.html'
     context_object_name = 'attempts'
     ordering = ['-attempted_at']
+
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')

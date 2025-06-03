@@ -13,7 +13,15 @@ from .models import Client, Mailing, Message, MailingAttempt
 # Create your views here.
 
 def home(request):
-    return render(request, 'mailings/home.html')
+    total_mailings = Mailing.objects.count()
+    active_mailings = Mailing.objects.filter(status='started').count()
+    unique_clients = Client.objects.count()
+    context = {
+        'total_mailings': total_mailings,
+        'active_mailings': active_mailings,
+        'unique_clients': unique_clients
+    }
+    return render(request, 'mailings/home.html', context)
 
 class ClientListView(ListView):
     model = Client

@@ -27,11 +27,23 @@ class ClientListView(ListView):
     model = Client
     template_name = 'mailings/client_list.html'
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs  # менеджеры видят всё
+        return qs.filter(owner=self.request.user)
+
+
 class ClientCreateView(CreateView):
     model = Client
     form_class = ClientForm
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
 
 class ClientUpdateView(UpdateView):
     model = Client
@@ -39,10 +51,24 @@ class ClientUpdateView(UpdateView):
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
+
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = 'mailings/client_confirm_delete.html'
     success_url = reverse_lazy('client-list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
 
 class MessageListView(ListView):
     model = Message
@@ -54,20 +80,46 @@ class MessageCreateView(CreateView):
     template_name = 'mailings/message_form.html'
     success_url = reverse_lazy('message-list')
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
 class MessageUpdateView(UpdateView):
     model = Message
     form_class = MessageForm
     template_name = 'mailings/message_form.html'
     success_url = reverse_lazy('message-list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
+
 class MessageDeleteView(DeleteView):
     model = Message
     template_name = 'mailings/message_confirm_delete.html'
     success_url = reverse_lazy('message-list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
+
 class MailingListView(ListView):
     model = Mailing
     template_name = 'mailing/mailing_list.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs  # менеджеры видят всё
+        return qs.filter(owner=self.request.user)
+
 
 class MailingCreateView(CreateView):
     model = Mailing
@@ -75,16 +127,35 @@ class MailingCreateView(CreateView):
     template_name = 'mailings/mailing_form.html'
     success_url = reverse_lazy('mailing-list')
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+
 class MailingUpdateView(UpdateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'mailings/mailing_form.html'
     success_url = reverse_lazy('mailing-list')
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
+
 class MailingDeleteView(DeleteView):
     model = Mailing
     template_name = 'mailings/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing-list')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
 
 class MailingStartView(View):
     def post(self, request, pk):
@@ -95,6 +166,8 @@ class MailingStartView(View):
 
         clients = mailing.clients.all()
         results = []
+
+
         for client in clients:
             try:
                 send_mail(
@@ -119,6 +192,15 @@ class MailingStartView(View):
             )
             results.append((client.email, status))
 
+            MailingAttempt.objects.create(
+                mailing=mailing,
+                client=client,
+                attempted_at=timezone.now(),
+                status=status,
+                server_response=server_response,
+                owner=request.user
+            )
+
         mailing.status = 'started'
         mailing.save()
         messages.success(request, "Рассылка запущена. Отправлено {} писем.".format(len(results)))
@@ -129,6 +211,13 @@ class MailingAttemptListView(ListView):
     template_name = 'mailings/attempt_list.html'
     context_object_name = 'attempts'
     ordering = ['-attempted_at']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
 
 class RegisterView(CreateView):
     form_class = UserCreationForm

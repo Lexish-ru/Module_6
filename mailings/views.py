@@ -1,18 +1,22 @@
-from django.shortcuts import render,get_object_or_404, redirect
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+import logging
+
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
-from django.views import View
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.cache import cache_page
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from .forms import ClientForm, MailingForm, MessageForm
-from .models import Client, Mailing, Message, MailingAttempt
+from .models import Client, Mailing, MailingAttempt, Message
 
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 @cache_page(60 * 5)
 def home(request):
@@ -170,14 +174,13 @@ class MailingDeleteView(DeleteView):
 class MailingStartView(View):
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
+        logger.info(f"Пользователь {request.user.email} запускает рассылку id={mailing.id}")
         if mailing.status != "created":
             messages.error(request, "Рассылка уже запущена или завершена.")
+            logger.warning(f"Рассылка {mailing.id} уже была запущена/завершена")
             return redirect('mailing-list')
-
         clients = mailing.clients.all()
         results = []
-
-
         for client in clients:
             try:
                 send_mail(
@@ -189,19 +192,11 @@ class MailingStartView(View):
                 )
                 status = 'Успешно'
                 server_response = 'ok'
+                logger.info(f"Письмо отправлено на {client.email}")
             except Exception as e:
                 status = "Неудача"
                 server_response = str(e)
-
-            MailingAttempt.objects.create(
-                mailing=mailing,
-                client=client,
-                attempted_at=timezone.now(),
-                status=status,
-                server_response=server_response,
-            )
-            results.append((client.email, status))
-
+                logger.error(f"Ошибка отправки {client.email}: {e}")
             MailingAttempt.objects.create(
                 mailing=mailing,
                 client=client,
@@ -210,11 +205,13 @@ class MailingStartView(View):
                 server_response=server_response,
                 owner=request.user
             )
-
+            results.append((client.email, status))
         mailing.status = 'started'
         mailing.save()
         messages.success(request, "Рассылка запущена. Отправлено {} писем.".format(len(results)))
+        logger.info(f"Рассылка {mailing.id} завершена: {len(results)} писем отправлено")
         return redirect('mailing-list')
+
 
 
 @method_decorator(cache_page(60*5), name='dispatch')

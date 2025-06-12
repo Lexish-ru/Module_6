@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
-from .models import CustomUser
+
 from .forms import ProfileForm
+from .models import CustomUser
+
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser

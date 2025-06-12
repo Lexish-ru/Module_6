@@ -30,6 +30,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, verbose_name="Email (логин)")
+    first_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Имя")
+    last_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Фамилия")
     avatar = models.ImageField(upload_to="media/", blank=True, null=True, verbose_name="Аватар")
     phone = models.CharField(max_length=30, blank=True, null=True, verbose_name="Телефон")
     country = models.CharField(max_length=100, blank=True, null=True, verbose_name="Страна")

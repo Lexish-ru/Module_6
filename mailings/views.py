@@ -6,12 +6,15 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.views import View
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from .forms import ClientForm, MailingForm, MessageForm
 from .models import Client, Mailing, Message, MailingAttempt
 
 # Create your views here.
 
+@cache_page(60 * 5)
 def home(request):
     total_mailings = Mailing.objects.count()
     active_mailings = Mailing.objects.filter(status='started').count()
@@ -23,6 +26,8 @@ def home(request):
     }
     return render(request, 'mailings/home.html', context)
 
+
+@method_decorator(cache_page(60*5), name='dispatch')
 class ClientListView(ListView):
     model = Client
     template_name = 'mailings/client_list.html'
@@ -70,6 +75,8 @@ class ClientDeleteView(DeleteView):
         return qs.filter(owner=self.request.user)
 
 
+
+@method_decorator(cache_page(60*5), name='dispatch')
 class MessageListView(ListView):
     model = Message
     template_name = 'mailings/message_list.html'
@@ -110,6 +117,8 @@ class MessageDeleteView(DeleteView):
         return qs.filter(owner=self.request.user)
 
 
+
+@method_decorator(cache_page(60*5), name='dispatch')
 class MailingListView(ListView):
     model = Mailing
     template_name = 'mailing/mailing_list.html'
@@ -157,6 +166,7 @@ class MailingDeleteView(DeleteView):
         return qs.filter(owner=self.request.user)
 
 
+@method_decorator(cache_page(60*5), name='dispatch')
 class MailingStartView(View):
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
@@ -206,6 +216,8 @@ class MailingStartView(View):
         messages.success(request, "Рассылка запущена. Отправлено {} писем.".format(len(results)))
         return redirect('mailing-list')
 
+
+@method_decorator(cache_page(60*5), name='dispatch')
 class MailingAttemptListView(ListView):
     model = MailingAttempt
     template_name = 'mailings/attempt_list.html'

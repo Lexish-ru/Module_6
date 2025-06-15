@@ -5,9 +5,15 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
+    """
+    Кастомный менеджер пользователя для работы без username.
+    """
     use_in_migrations = True
 
     def create_user(self, email, password=None, **extra_fields):
+        """
+        Создаёт обычного пользователя по email.
+        """
         if not email:
             raise ValueError('Email должен быть задан')
         email = self.normalize_email(email)
@@ -17,6 +23,9 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Создаёт суперпользователя с правами администратора.
+        """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -29,6 +38,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+    """
+    Кастомная модель пользователя.
+    Авторизация по email, добавлены поля: avatar, phone, country.
+    """
     email = models.EmailField(unique=True, verbose_name="Email (логин)")
     first_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Имя")
     last_name = models.CharField(max_length=50, blank=True, null=True, verbose_name="Фамилия")
@@ -41,4 +54,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
+    def __str__(self):
+        """Строковое представление пользователя."""
+        return self.email
 

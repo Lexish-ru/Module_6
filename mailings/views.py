@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 @cache_page(60 * 5)
 def home(request):
+    """Главная страница сервиса рассылок."""
     total_mailings = Mailing.objects.count()
     active_mailings = Mailing.objects.filter(status='started').count()
     unique_clients = Client.objects.count()
@@ -33,10 +34,17 @@ def home(request):
 
 @method_decorator(cache_page(60*5), name='dispatch')
 class ClientListView(ListView):
+    """
+    Представление для списка клиентов.
+    Если пользователь менеджер (is_staff), видит всех, иначе — только своих.
+    """
     model = Client
     template_name = 'mailings/client_list.html'
 
     def get_queryset(self):
+        """
+        Возвращает QuerySet клиентов: всех для менеджера, или только своих.
+        """
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs  # менеджеры видят всё
@@ -44,23 +52,29 @@ class ClientListView(ListView):
 
 
 class ClientCreateView(CreateView):
+    """Создание нового клиента рассылки."""
     model = Client
     form_class = ClientForm
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
 
     def form_valid(self, form):
+        """
+         Устанавливает текущего пользователя владельцем клиента.
+        """
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
 class ClientUpdateView(UpdateView):
+    """Редактирование клиента рассылки."""
     model = Client
     form_class = ClientForm
     template_name = 'mailings/client_form.html'
     success_url = reverse_lazy('client-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к клиентам."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -68,11 +82,13 @@ class ClientUpdateView(UpdateView):
 
 
 class ClientDeleteView(DeleteView):
+    """Удаление клиента рассылки."""
     model = Client
     template_name = 'mailings/client_confirm_delete.html'
     success_url = reverse_lazy('client-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к клиентам."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -82,27 +98,39 @@ class ClientDeleteView(DeleteView):
 
 @method_decorator(cache_page(60*5), name='dispatch')
 class MessageListView(ListView):
+    """Список сообщений для рассылки."""
     model = Message
     template_name = 'mailings/message_list.html'
 
+    def get_queryset(self):
+        """Показывает сообщения только владельца или все для менеджера."""
+        qs = super().get_queryset()
+        if self.request.user.is_staff:
+            return qs
+        return qs.filter(owner=self.request.user)
+
 class MessageCreateView(CreateView):
+    """Создание сообщения для рассылки."""
     model = Message
     form_class = MessageForm
     template_name = 'mailings/message_form.html'
     success_url = reverse_lazy('message-list')
 
     def form_valid(self, form):
+        """Устанавливает текущего пользователя владельцем сообщения."""
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
 class MessageUpdateView(UpdateView):
+    """Редактирование сообщения для рассылки."""
     model = Message
     form_class = MessageForm
     template_name = 'mailings/message_form.html'
     success_url = reverse_lazy('message-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к сообщениям."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -110,11 +138,13 @@ class MessageUpdateView(UpdateView):
 
 
 class MessageDeleteView(DeleteView):
+    """Удаление сообщения для рассылки."""
     model = Message
     template_name = 'mailings/message_confirm_delete.html'
     success_url = reverse_lazy('message-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к сообщениям."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -124,10 +154,12 @@ class MessageDeleteView(DeleteView):
 
 @method_decorator(cache_page(60*5), name='dispatch')
 class MailingListView(ListView):
+    """Список рассылок для пользователя."""
     model = Mailing
     template_name = 'mailing/mailing_list.html'
 
     def get_queryset(self):
+        """Показывает рассылки только владельца или все для менеджера."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs  # менеджеры видят всё
@@ -135,23 +167,27 @@ class MailingListView(ListView):
 
 
 class MailingCreateView(CreateView):
+    """Создание новой рассылки."""
     model = Mailing
     form_class = MailingForm
     template_name = 'mailings/mailing_form.html'
     success_url = reverse_lazy('mailing-list')
 
     def form_valid(self, form):
+        """Устанавливает текущего пользователя владельцем рассылки."""
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
 class MailingUpdateView(UpdateView):
+    """Редактирование рассылки."""
     model = Mailing
     form_class = MailingForm
     template_name = 'mailings/mailing_form.html'
     success_url = reverse_lazy('mailing-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к своим рассылкам."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -159,11 +195,13 @@ class MailingUpdateView(UpdateView):
 
 
 class MailingDeleteView(DeleteView):
+    """Удаление рассылки."""
     model = Mailing
     template_name = 'mailings/mailing_confirm_delete.html'
     success_url = reverse_lazy('mailing-list')
 
     def get_queryset(self):
+        """Ограничивает доступ к своим рассылкам."""
         qs = super().get_queryset()
         if self.request.user.is_staff:
             return qs
@@ -172,6 +210,10 @@ class MailingDeleteView(DeleteView):
 
 @method_decorator(cache_page(60*5), name='dispatch')
 class MailingStartView(View):
+    """
+    Запуск рассылки для выбранной группы клиентов.
+    Формирует MailingAttempt для каждого получателя.
+    """
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
         logger.info(f"Пользователь {request.user.email} запускает рассылку id={mailing.id}")
@@ -216,6 +258,7 @@ class MailingStartView(View):
 
 @method_decorator(cache_page(60*5), name='dispatch')
 class MailingAttemptListView(ListView):
+    """Список попыток рассылок (отчёт)."""
     model = MailingAttempt
     template_name = 'mailings/attempt_list.html'
     context_object_name = 'attempts'
@@ -229,6 +272,7 @@ class MailingAttemptListView(ListView):
 
 
 class RegisterView(CreateView):
+    """Создание пользователя"""
     form_class = UserCreationForm
     template_name = 'registration/register.html'
     success_url = reverse_lazy('login')

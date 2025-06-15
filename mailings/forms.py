@@ -4,6 +4,7 @@ from.models import Client, Message, Mailing
 
 
 class ClientForm(forms.ModelForm):
+    """Форма создания и редактирования клиента."""
     class Meta:
         model = Client
         fields = ['email', 'full_name', 'comment']
@@ -15,6 +16,7 @@ class ClientForm(forms.ModelForm):
 
 
 class MessageForm(forms.ModelForm):
+    """Форма создания и редактирования сообщения."""
     class Meta:
         model = Message
         fields = ['subject', 'body']
@@ -26,6 +28,7 @@ class MessageForm(forms.ModelForm):
 
 
 class MailingForm(forms.ModelForm):
+    """Форма создания и редактирования рассылки."""
     class Meta:
         model = Mailing
         fields = ['start_at', 'end_at', 'status', 'message', 'clients']

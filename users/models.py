@@ -50,8 +50,9 @@ class CustomUser(AbstractUser):
     country = models.CharField(max_length=100, blank=True, null=True, verbose_name="Страна")
     objects = CustomUserManager()
 
-
-    USERNAME_FIELD = "email"
+    username = None
+    EMAIL_FIELD = 'email'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     def __str__(self):

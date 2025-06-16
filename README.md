@@ -24,8 +24,8 @@ Django 5 + Bootstrap + PostgreSQL + .env (django-environ)
 ### 1. Клонировать проект
 
 ```bash
-git clone <ваш-репозиторий>
-cd <папка-проекта>
+git clone https://github.com/Lexish-ru/Module_6.git
+cd Module_6
 ```
 
 ### 2. Установить Poetry и зависимости

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "cp-5"
+version = "0.1.0"
+description = "Course project for module 6, Skypro"
+authors = ["Alexey Stolbov <alstoff@live.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4"
+django = ">=5.2.1,<6.0.0"
+django-environ = "^0.12.0"
+psycopg2-binary = "^2.9.10"
+pillow = "^11.2.1"
+django-redis = "^5.4.0"
+
+[tool.poetry.group.dev.dependencies]
+isort = ">=6.0.1,<7.0.0"
+flake8 = ">=7.2.0,<8.0.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
